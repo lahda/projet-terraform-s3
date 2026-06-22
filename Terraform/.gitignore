@@ -1,0 +1,24 @@
+### Terraform local files
+# Local Terraform working directory
+.terraform/
+# Avoid committing provider binaries inside .terraform
+.terraform/**
+
+# Terraform state files
+*.tfstate
+*.tfstate.backup
+
+# Crash log files
+crash.log*
+
+# Ignore override and variable files that may contain secrets
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+terraform.tfvars
+terraform.tfvars.json
+
+# Ignore private keys
+*.pem
+
