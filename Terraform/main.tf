@@ -1,22 +1,18 @@
 resource "random_id" "suffix" {
-  byte_length = 4
+    byte_length = 4
 }
 
-resource "aws_s3_bucket_public_access_block" "block" {
-    bucket = aws_s3_bucket.bucket.id
+# Use the s3 module located at ./s3. Pass the bucket name (or generate one)
+module "s3" {
+    source = "./s3"
 
-    block_public_acls       = true
-    block_public_policy     = true
-    ignore_public_acls      = true
-    restrict_public_buckets = true
+    aws_s3_bucket = var.bucket_name
+    aws_region    = var.aws_region
 }
 
-resource "aws_s3_bucket_server_side_encryption_configuration" "sse" {
-    bucket = aws_s3_bucket.bucket.id
-    
-    rule {
-        apply_server_side_encryption_by_default {
-            sse_algorithm = "AES256"
-        }
-    }
+module "ecr" {
+    source = "./ecr"
+    aws_region            = var.aws_region
+    ecr_repository_name   = var.ecr_repository_name
+    environment           = var.environment  
 }
