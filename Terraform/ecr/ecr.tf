@@ -1,0 +1,12 @@
+
+resource "aws_ecr_repository" "app_repository" {
+    name = var.ecr_repository_name
+
+image_scanning_configuration {
+  scan_on_push = true
+}
+  tags = {
+    Environment = var.environment
+    Formation   = "terraform seance1"
+  }
+}
