@@ -6,7 +6,7 @@ resource "random_id" "suffix" {
 module "s3" {
     source = "./s3"
 
-    aws_s3_bucket = var.bucket_name
+    aws_s3_bucket = var.aws_s3_bucket
     aws_region    = var.aws_region
 }
 
