@@ -31,33 +31,33 @@ resource "aws_internet_gateway" "main" {
 resource "aws_subnet" "public" {
     for_each = local.az_map
     vpc_id            = aws_vpc.main.id
-    cidr_block        = cidrsubnet(var.vpc_cidr, 8, count.index)
-    availability_zone = each.key
+    cidr_block        = cidrsubnet(var.vpc_cidr, 8, tonumber(each.key) - 1)
+    availability_zone = each.value
     map_public_ip_on_launch = true
     tags = {
-        Name = "${var.environment}-public-subnet-${count.index + 1}"
+        Name = "${var.environment}-public-subnet-${each.key}"
     }
-  
+
 }
 
 resource "aws_subnet" "private" {
     for_each = local.az_map
     vpc_id            = aws_vpc.main.id
-    cidr_block        = cidrsubnet(var.vpc_cidr, 8, count.index + var.az_count)
-    availability_zone = each.key
+    cidr_block        = cidrsubnet(var.vpc_cidr, 8, tonumber(each.key) - 1 + var.az_count)
+    availability_zone = each.value
     tags = {
-        Name = "${var.environment}-private-subnet-${count.index + 1}"
+        Name = "${var.environment}-private-subnet-${each.key}"
     }
-  
+
 }
 
 resource "aws_eip" "nat" {
     for_each = local.az_map
     domain = "vpc"
     tags = {
-        Name = "${var.environment}-nat-eip"
+        Name = "${var.environment}-nat-eip-${each.key}"
     }
-  
+
 }
 
 resource "aws_nat_gateway" "main" {
@@ -65,7 +65,7 @@ resource "aws_nat_gateway" "main" {
     subnet_id = aws_subnet.public[each.key].id
     allocation_id = aws_eip.nat[each.key].id
     tags = {
-        Name = "${var.environment}-nat-gateway"
+        Name = "${var.environment}-nat-gateway-${each.key}"
     }
     depends_on = [ aws_internet_gateway.main ]
 }
@@ -95,7 +95,7 @@ resource "aws_route_table" "private" {
         nat_gateway_id = aws_nat_gateway.main[each.key].id
     }
     tags = {
-        Name = "${var.environment}-private-route-table"
+        Name = "${var.environment}-private-route-table-${each.key}"
     }
 }
 
@@ -117,7 +117,7 @@ resource "aws_security_group" "alb" {
         cidr_blocks = ["0.0.0.0/0"]
     }
 
-    ingress = {
+    ingress {
         from_port   = 443
         to_port     = 443
         protocol    = "tcp"
