@@ -1,0 +1,12 @@
+{
+  "name": "filrouge-app",
+  "version": "1.0.0",
+  "description": "Application fil rouge Terraform + AWS ECS Fargate",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
